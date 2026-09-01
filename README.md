@@ -3,7 +3,7 @@
 </p>
 <h1 align="center">AndroidToolbox</h1>
 
-Providing functionality missing in Android as compared to less secure "desktop" operating systems, such as curl.
+Providing functionality missing in the [more secure](https://grapheneos.org/features) AOSP-bases distributions (Android™, GrapheneOS) such as curl compared to less secure "desktop" operating systems. 
 
 ## Features
 
