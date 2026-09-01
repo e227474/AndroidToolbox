@@ -13,6 +13,7 @@ Providing functionality missing in the [more secure](https://grapheneos.org/feat
 - [x] opt into highest security available MTE modes
 - [ ] open dev tools for a provided URL (under consideration)
 - [ ] automatically detect media urls inside fetched HTML and provide options to download them (under consideration)
+- [ ] publish app on [Accrescent](https://acccrescent.app) once [submissions are public](https://infosec.exchange/@accrescent/117152213429980044)
 
 ## Screenshots
 
