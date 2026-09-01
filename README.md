@@ -1,4 +1,7 @@
-# AndroidToolbox
+<p align="center">
+<img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp">
+</p>
+<h1 align="center">AndroidToolbox</h1>
 
 Providing functionality missing in Android as compared to less secure "desktop" operating systems, such as curl.
 
