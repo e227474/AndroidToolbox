@@ -1,10 +1,6 @@
 package com.github.e227474.androidtoolbox
-
-import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -61,23 +57,11 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun openHtmlViewer(htmlContent: String) {
-        val htmlUri = Uri.parse(
-            "data:text/html;charset=utf-8,${Uri.encode(htmlContent)}"
-        )
-
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            data = htmlUri
+        val intent = Intent(this, HtmlViewerActivity::class.java).apply {
+            putExtra(HtmlViewerActivity.EXTRA_HTML_CONTENT, htmlContent)
         }
 
-        try {
-            startActivity(intent)
-        } catch (_: ActivityNotFoundException) {
-            Toast.makeText(
-                this,
-                "No application is available to display HTML content.",
-                Toast.LENGTH_LONG
-            ).show()
-        }
+        startActivity(intent)
     }
 }
 
