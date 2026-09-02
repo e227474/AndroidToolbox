@@ -253,9 +253,7 @@ private fun HtmlViewerFabMenu(
                 .padding(16.dp),
             horizontalAlignment = Alignment.End
         ) {
-            // ... keep the rest of your AnimatedVisibility and FloatingActionButton code exactly the same
-
-            AnimatedVisibility(
+                        AnimatedVisibility(
                 visible = isMenuOpen,
                 enter = fadeIn(),
                 exit = fadeOut()
