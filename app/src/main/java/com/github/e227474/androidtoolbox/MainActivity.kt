@@ -31,6 +31,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.HttpURLConnection
 import java.net.URL
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+
 
 
 class MainActivity : ComponentActivity() {
@@ -153,8 +158,19 @@ fun HtmlFetcherScreen(
                     label = {
                         Text("Url")
                     },
-                    singleLine = true
+                    singleLine = true,
+                    trailingIcon = {
+                        if (url.isNotEmpty()) {
+                            IconButton(onClick = { url = "" }) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Clear text"
+                                )
+                            }
+                        }
+                    }
                 )
+
             }
 
             errorMessage?.let { message ->
