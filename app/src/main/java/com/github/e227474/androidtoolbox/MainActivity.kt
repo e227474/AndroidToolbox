@@ -104,7 +104,7 @@ fun HtmlFetcherScreen(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = "Get Html from source url specified below."
+                        text = "Get HTML from source URL specified below."
                     )
                 }
 
@@ -156,7 +156,7 @@ fun HtmlFetcherScreen(
                     },
                     modifier = Modifier.fillMaxWidth(),
                     label = {
-                        Text("Url")
+                        Text("URL")
                     },
                     singleLine = true,
                     trailingIcon = {
