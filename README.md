@@ -14,8 +14,13 @@ Providing functionality missing in the [more secure](https://grapheneos.org/feat
   - share
 - [X] Date difference Calculator
 - [x] MDY UI, both in native Compose and WebView parts of the app with large screen support.
-- [x] Disables insecure JIT compilation
+- [x] Disabled insecure JIT compilation
 - [x] opt into highest security available MTE modes
+
+
+## Permissions
+- `android.permission.INTERNET` (required for curl functionality)
+- [sensors permission](https://grapheneos.org/features#sensors-permission-toggle) (only on [GrapheneOS](https://grapheneos.org), can't be removed as a developer) 
 
 ## Backlog
 - [ ] ~~open dev tools for a provided URL (under consideration)~~ (Not possible without major workarounds)
