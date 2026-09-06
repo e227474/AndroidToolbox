@@ -11,11 +11,9 @@ import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.animation.*
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,10 +21,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.TextSnippet
-import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Html
 import androidx.compose.material.icons.filled.Share
@@ -224,71 +224,104 @@ private fun HtmlViewerFabMenu(
     onSaveAsHtml: () -> Unit,
     onShare: () -> Unit
 ) {
-    var isMenuOpen by remember { mutableStateOf(false) }
-
-    val cornerRadius by animateDpAsState(
-        targetValue = if (isMenuOpen) 28.dp else 16.dp,
-        label = "FAB corner"
-    )
+    var isExpanded by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // 1. Dismiss Layer: Only active when menu is open
-        if (isMenuOpen) {
+        // Dismiss Layer
+        if (isExpanded) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .clickable(
-                        // removes the ripple effect from the background click
                         indication = null,
-                        interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                        interactionSource = remember { MutableInteractionSource() }
                     ) {
-                        isMenuOpen = false
+                        isExpanded = false
                     }
             )
         }
 
-        Column(
+        Box(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            horizontalAlignment = Alignment.End
+                .padding(16.dp)
         ) {
-                        AnimatedVisibility(
-                visible = isMenuOpen,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                Surface(
-                    shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    modifier = Modifier.padding(bottom = 12.dp)
-                ) {
-                    Column {
-                        MenuOptionItem(Icons.AutoMirrored.Filled.TextSnippet, "Save as Plaintext") {
-                            isMenuOpen = false
-                            onSaveAsTxt()
-                        }
-                        MenuOptionItem(Icons.Default.Html, "Save as HTML") {
-                            isMenuOpen = false
-                            onSaveAsHtml()
-                        }
-                        MenuOptionItem(Icons.Default.Share, "Share") {
-                            isMenuOpen = false
-                            onShare()
+            AnimatedContent(
+                targetState = isExpanded,
+                transitionSpec = {
+                    (fadeIn() + scaleIn()).togetherWith(fadeOut() + scaleOut())
+                },
+                label = "FAB Morph"
+            ) { expanded ->
+                if (expanded) {
+                    // Expanded state:
+                    Surface(
+                        shape = RoundedCornerShape(28.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        modifier = Modifier.width(256.dp)
+                    ) {
+                        Column {
+                            // Header of the expanded menu (fab)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { isExpanded = false }
+                                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Download,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Export Options",
+                                    modifier = Modifier.padding(start = 12.dp),
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Close",
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .align(Alignment.CenterVertically)
+                                        .wrapContentWidth(Alignment.End)
+                                        .size(20.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+
+                            }
+
+                            // Fab becomes extended:
+                            MenuOptionItem(Icons.AutoMirrored.Filled.TextSnippet, "Save as Plaintext") {
+                                isExpanded = false
+                                onSaveAsTxt()
+                            }
+                            MenuOptionItem(Icons.Default.Html, "Save as HTML") {
+                                isExpanded = false
+                                onSaveAsHtml()
+                            }
+                            MenuOptionItem(Icons.Default.Share, "Share") {
+                                isExpanded = false
+                                onShare()
+                            }
                         }
                     }
+                } else {
+                    // When fab is collapsed:
+                    FloatingActionButton(
+                        onClick = { isExpanded = true },
+                        modifier = Modifier.size(56.dp),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Download,
+                            contentDescription = "Open menu"
+                        )
+                    }
                 }
-            }
-
-            FloatingActionButton(
-                onClick = { isMenuOpen = !isMenuOpen },
-                modifier = Modifier.size(56.dp),
-                shape = RoundedCornerShape(cornerRadius)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Download,
-                    contentDescription = if (isMenuOpen) "Close menu" else "Open menu"
-                )
             }
         }
     }
@@ -298,6 +331,7 @@ private fun HtmlViewerFabMenu(
 private fun MenuOptionItem(icon: androidx.compose.ui.graphics.vector.ImageVector, text: String, onClick: () -> Unit) {
     Row(
         modifier = Modifier
+            .fillMaxWidth()
             .clickable { onClick() }
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -317,7 +351,6 @@ private fun MenuOptionItem(icon: androidx.compose.ui.graphics.vector.ImageVector
     }
 }
 
-// the code below is AI generated, I had no idea how I could make the preview work while not glitching since the WebView content is non-existent in the compose preview in Android Studio.
 @androidx.compose.ui.tooling.preview.Preview(showBackground = true)
 @Composable
 private fun HtmlViewerFabMenuPreview() {
