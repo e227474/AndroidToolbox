@@ -51,7 +51,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.unit.dp
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -67,7 +69,6 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 import kotlin.math.absoluteValue
-import androidx.compose.ui.platform.LocalLocale
 
 // Define Nav routes
 sealed class Screen(val route: String, val label: String, val icon: @Composable () -> Unit) {
@@ -86,6 +87,7 @@ sealed class Screen(val route: String, val label: String, val icon: @Composable 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
