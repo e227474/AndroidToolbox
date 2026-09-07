@@ -19,7 +19,6 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Download
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ElevatedButton
@@ -35,6 +34,9 @@ import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -53,6 +55,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLocale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavHostController
@@ -152,7 +155,6 @@ fun AdaptiveAppContainer(
         }
     }
 }
-
 @Composable
 fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modifier) {
     NavHost(
@@ -163,9 +165,10 @@ fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modif
         composable(Screen.Curl.route) {
             val context = LocalContext.current
             HtmlFetcherScreen(
-                onHtmlFetched = { htmlContent ->
+                onHtmlFetched = { htmlContent, contentType ->
                     val intent = Intent(context, HtmlViewerActivity::class.java).apply {
                         putExtra(HtmlViewerActivity.EXTRA_HTML_CONTENT, htmlContent)
+                        putExtra(HtmlViewerActivity.EXTRA_CONTENT_TYPE, contentType)
                     }
                     context.startActivity(intent)
                 }
@@ -176,6 +179,7 @@ fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modif
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -329,11 +333,15 @@ fun DateInputRow(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HtmlFetcherScreen(
     modifier: Modifier = Modifier,
-    onHtmlFetched: (String) -> Unit = {}
+    onHtmlFetched: (String, String) -> Unit = { _, _ -> }
 ) {
+    val options = listOf("HTML", "JavaScript", "CSS", "Markdown", "Other")
+    var selectedOption by remember { mutableStateOf(options[0]) }
+
     var url by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
     var fetching by remember { mutableStateOf(false) }
@@ -346,11 +354,10 @@ fun HtmlFetcherScreen(
         Column {
             Row(modifier = Modifier.padding(24.dp)) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = "Get HTML from source URL specified below.")
+                    Text(text = "Get $selectedOption from source URL specified below.")
                 }
 
                 ElevatedButton(
-                    colors = ButtonDefaults.buttonColors(),
                     enabled = !fetching && url.isNotBlank(),
                     onClick = {
                         val enteredUrl = url.trim()
@@ -361,15 +368,34 @@ fun HtmlFetcherScreen(
                             val result = fetchHtmlContent(enteredUrl)
                             fetching = false
                             result.onSuccess { htmlContent ->
-                                onHtmlFetched(htmlContent)
+                                onHtmlFetched(htmlContent, selectedOption)
                             }.onFailure { exception ->
                                 errorMessage = exception.message ?: "Unable to fetch HTML content."
                             }
                         }
                     }
                 ) {
-                    Text(text = if (fetching) "Loading..." else "Get HTML")
+                    Text(text = if (fetching) "Loading..." else "Get $selectedOption")
                 }
+            }
+            SingleChoiceSegmentedButtonRow(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp)
+            ) {
+                options.forEachIndexed { index, option ->
+                    SegmentedButton(
+                        selected = selectedOption == option,
+                        onClick = { selectedOption = option },
+                        shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = option,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+
             }
 
             if (fetching) {
@@ -408,7 +434,6 @@ fun HtmlFetcherScreen(
         }
     }
 }
-
 private suspend fun fetchHtmlContent(urlString: String): Result<String> = withContext(Dispatchers.IO) {
     runCatching {
         val normalizedUrl = if (urlString.startsWith("http://") || urlString.startsWith("https://")) {

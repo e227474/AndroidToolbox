@@ -2,7 +2,6 @@ package com.github.e227474.androidtoolbox
 
 import android.content.Intent
 import android.content.res.Configuration
-import android.graphics.Color as AndroidColor
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -27,15 +26,20 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.TextSnippet
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Download
-import androidx.compose.material.icons.filled.Html
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,19 +58,25 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
-import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import android.graphics.Color as AndroidColor
 
 class HtmlViewerActivity : ComponentActivity() {
 
     private var htmlContent: String = ""
+    private var contentType: String = "HTML"
     private var pendingSaveContent: String? = null
 
+    private fun getExtensionForType(type: String): String {
+        return when (type) {
+            "HTML" -> "html"
+            "JavaScript" -> "js"
+            "CSS" -> "css"
+            "Markdown" -> "md"
+            else -> "txt"
+        }
+    }
     private val createDocumentLauncher =
         registerForActivityResult(
             ActivityResultContracts.CreateDocument("*/*")
@@ -88,6 +98,7 @@ class HtmlViewerActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         htmlContent = intent.getStringExtra(EXTRA_HTML_CONTENT) ?: ""
+        contentType = intent.getStringExtra(EXTRA_CONTENT_TYPE) ?: "HTML"
 
         val isDarkTheme =
             (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
@@ -98,6 +109,7 @@ class HtmlViewerActivity : ComponentActivity() {
 
         val sourcePage = createSourcePage(
             htmlContent = escapedHtml,
+            contentType = contentType,
             colorScheme = colorScheme
         )
 
@@ -116,8 +128,9 @@ class HtmlViewerActivity : ComponentActivity() {
             setContent {
                 MaterialTheme(colorScheme = colorScheme) {
                     HtmlViewerFabMenu(
+                        contentType = contentType,
                         onSaveAsTxt = { saveAsTxt() },
-                        onSaveAsHtml = { saveAsHtml() },
+                        onSaveAsSource = { saveAsSource() },
                         onShare = { shareHtml() }
                     )
                 }
@@ -146,23 +159,21 @@ class HtmlViewerActivity : ComponentActivity() {
 
     private fun saveAsTxt() {
         pendingSaveContent = htmlContent
-        createDocumentLauncher.launch("html-source.txt")
+        createDocumentLauncher.launch("${contentType.lowercase()}-source.txt")
     }
-
-    private fun saveAsHtml() {
+    private fun saveAsSource() {
+        val extension = getExtensionForType(contentType)
         pendingSaveContent = htmlContent
-        createDocumentLauncher.launch("html-source.html")
+        createDocumentLauncher.launch("${contentType.lowercase()}-source.$extension")
     }
-
     private fun shareHtml() {
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "text/html"
-            putExtra(Intent.EXTRA_SUBJECT, "HTML source")
+            putExtra(Intent.EXTRA_SUBJECT, "$contentType source")
             putExtra(Intent.EXTRA_TEXT, htmlContent)
         }
-        startActivity(Intent.createChooser(shareIntent, "Share HTML source"))
+        startActivity(Intent.createChooser(shareIntent, "Share $contentType source"))
     }
-
     private fun getMaterialColorScheme(isDarkTheme: Boolean): ColorScheme {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (isDarkTheme) dynamicDarkColorScheme(this) else dynamicLightColorScheme(this)
@@ -171,7 +182,7 @@ class HtmlViewerActivity : ComponentActivity() {
         }
     }
 
-    private fun createSourcePage(htmlContent: String, colorScheme: ColorScheme): String {
+    private fun createSourcePage(htmlContent: String, contentType: String, colorScheme: ColorScheme): String {
         val background = colorScheme.background.toCssColor()
         val surface = colorScheme.surface.toCssColor()
         val surfaceContainer = colorScheme.surfaceContainer.toCssColor()
@@ -197,9 +208,9 @@ class HtmlViewerActivity : ComponentActivity() {
                 </style>
             </head>
             <body>
-                <h1>HTML Source</h1>
+                <h1>$contentType Source</h1>
                 <div class="source-card">
-                    <div class="source-label">SOURCE CODE</div>
+                    <div class="source-label">$contentType CODE</div>
                     <pre><code>$htmlContent</code></pre>
                 </div>
             </body>
@@ -214,20 +225,21 @@ class HtmlViewerActivity : ComponentActivity() {
 
     companion object {
         const val EXTRA_HTML_CONTENT = "com.github.e227474.androidtoolbox.EXTRA_HTML_CONTENT"
+        const val EXTRA_CONTENT_TYPE = "com.github.e227474.androidtoolbox.EXTRA_CONTENT_TYPE"
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HtmlViewerFabMenu(
+    contentType: String,
     onSaveAsTxt: () -> Unit,
-    onSaveAsHtml: () -> Unit,
+    onSaveAsSource: () -> Unit,
     onShare: () -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Dismiss Layer
         if (isExpanded) {
             Box(
                 modifier = Modifier
@@ -254,14 +266,12 @@ private fun HtmlViewerFabMenu(
                 label = "FAB Morph"
             ) { expanded ->
                 if (expanded) {
-                    // Expanded state:
                     Surface(
                         shape = RoundedCornerShape(28.dp),
                         color = MaterialTheme.colorScheme.surfaceContainerHigh,
                         modifier = Modifier.width(256.dp)
                     ) {
                         Column {
-                            // Header of the expanded menu (fab)
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -291,17 +301,15 @@ private fun HtmlViewerFabMenu(
                                         .size(20.dp),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
-
                             }
 
-                            // Fab becomes extended:
                             MenuOptionItem(Icons.AutoMirrored.Filled.TextSnippet, "Save as Plaintext") {
                                 isExpanded = false
                                 onSaveAsTxt()
                             }
-                            MenuOptionItem(Icons.Default.Html, "Save as HTML") {
+                            MenuOptionItem(Icons.Default.Code, "Save as $contentType") {
                                 isExpanded = false
-                                onSaveAsHtml()
+                                onSaveAsSource()
                             }
                             MenuOptionItem(Icons.Default.Share, "Share") {
                                 isExpanded = false
@@ -310,7 +318,6 @@ private fun HtmlViewerFabMenu(
                         }
                     }
                 } else {
-                    // When fab is collapsed:
                     FloatingActionButton(
                         onClick = { isExpanded = true },
                         modifier = Modifier.size(56.dp),
@@ -348,19 +355,5 @@ private fun MenuOptionItem(icon: androidx.compose.ui.graphics.vector.ImageVector
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-    }
-}
-
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
-@Composable
-private fun HtmlViewerFabMenuPreview() {
-    MaterialTheme {
-        Box(modifier = Modifier.size(360.dp, 640.dp)) {
-            HtmlViewerFabMenu(
-                onSaveAsTxt = {},
-                onSaveAsHtml = {},
-                onShare = {}
-            )
-        }
     }
 }
