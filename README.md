@@ -24,5 +24,5 @@ Providing functionality missing in the [more secure](https://grapheneos.org/feat
 
 ## Backlog
 - [ ] ~~open dev tools for a provided URL (under consideration)~~ (Not possible without major workarounds)
-- [ ] automatically detect media urls inside fetched HTML and provide options to download them (under consideration)
+- [ ] automatic file type detection and according "save as" options
 - [ ] publish app on [Accrescent](https://accrescent.app) once [submissions are public](https://infosec.exchange/@accrescent/117152213429980044)
