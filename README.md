@@ -7,10 +7,10 @@ Providing functionality missing in the [more secure](https://grapheneos.org/feat
 
 ## Features
 
-- [x] Basic Curl implementation (fetching HTML from a URL and displaying it using the system WebView.)
+- [x] Basic Curl implementation for fetching HTML, JavaScript, CSS, Markdown and Other (treated as txt) from a URL and displaying it using the system WebView.)
  - [x] "Save as" FAB dialog allowing to:
   - save as Plaintext txt
-  - save as HTML
+  - save as source
   - share
 - [X] Date difference Calculator
 - [x] MDY UI, both in native Compose and WebView parts of the app with large screen support.
@@ -23,6 +23,4 @@ Providing functionality missing in the [more secure](https://grapheneos.org/feat
 - [sensors permission](https://grapheneos.org/features#sensors-permission-toggle) (only on [GrapheneOS](https://grapheneos.org), can't be removed as a developer) 
 
 ## Backlog
-- [ ] ~~open dev tools for a provided URL (under consideration)~~ (Not possible without major workarounds)
-- [ ] automatic file type detection and according "save as" options
 - [ ] publish app on [Accrescent](https://accrescent.app) once [submissions are public](https://infosec.exchange/@accrescent/117152213429980044)
