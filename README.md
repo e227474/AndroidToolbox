@@ -17,13 +17,12 @@ Providing functionality missing in the [more secure](https://grapheneos.org/feat
 - [x] Disabled insecure JIT compilation
 - [x] opt into highest security available MTE modes
 
+## Backlog
+- [ ] publish app on [Accrescent](https://accrescent.app) once [submissions are public](https://infosec.exchange/@accrescent/117152213429980044)
 
 ## Permissions
 - `android.permission.INTERNET` (required for curl functionality)
 - [sensors permission](https://grapheneos.org/features#sensors-permission-toggle) (only on [GrapheneOS](https://grapheneos.org), can't be removed as a developer) 
-
-## Backlog
-- [ ] publish app on [Accrescent](https://accrescent.app) once [submissions are public](https://infosec.exchange/@accrescent/117152213429980044)
 
 ## Architecture
 
