@@ -17,6 +17,11 @@ Providing functionality missing in the [more secure](https://grapheneos.org/feat
 - [x] Disabled insecure JIT compilation
 - [x] opt into highest security available MTE modes
 
+## Screenshots
+<p align="center">
+<img height="512" src="https://raw.githubusercontent.com/e227474/AndroidToolbox/refs/heads/master/app_screenshot-pixel10profold.png">
+</p> 
+
 ## Backlog
 - [ ] publish app on [Accrescent](https://accrescent.app) once [submissions are public](https://infosec.exchange/@accrescent/117152213429980044)
 
