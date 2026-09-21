@@ -81,3 +81,6 @@ graph TD
     class CurlEngine,DateLogic,FileHandler logicLayer;
     class Internet,AndroidStorage,AndroidIntents externalLayer;
 ```
+
+## Paper
+(will be added once finished with personally identifying information redacted)
