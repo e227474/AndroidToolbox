@@ -30,57 +30,9 @@ Providing functionality missing in the [more secure](https://grapheneos.org/feat
 - [sensors permission](https://grapheneos.org/features#sensors-permission-toggle) (only on [GrapheneOS](https://grapheneos.org), can't be removed as a developer) 
 
 ## Architecture
+<img src="https://raw.githubusercontent.com/e227474/AndroidToolbox/refs/heads/master/architecture-graph.png">
 
-```mermaid
----
-  layout: dagre
----
-graph TD
-    %% Style Definitions
-    classDef uiLayer fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#01579b;
-    classDef logicLayer fill:#f1f8e9,stroke:#33691e,stroke-width:2px,color:#33691e;
-    classDef externalLayer fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#e65100;
 
-    subgraph UI_Layer [UI Layer - Jetpack Compose]
-        MainScreen([Main Screen])
-        DateCalcUI([Date Difference Calculator])
-        WebViewContainer([WebView Display])
-        SaveDialog([Save As / Share Dialog])
-    end
-
-    subgraph Logic_Layer [Logic & Service Layer]
-        CurlEngine([Curl Network Client])
-        DateLogic([Date Calculation Logic])
-        FileHandler([File & Share Manager])
-    end
-
-    subgraph External_Layer [External / System Layer]
-        Internet((Internet))
-        AndroidStorage[(Android Storage)]
-        AndroidIntents([Android Share Intents])
-    end
-
-    %% User Interactions
-    MainScreen --> DateCalcUI
-    MainScreen --> WebViewContainer
-    WebViewContainer --> SaveDialog
-
-    %% Data Flows
-    WebViewContainer --> CurlEngine
-    CurlEngine <--> Internet
-    CurlEngine --> WebViewContainer
-
-    DateCalcUI <--> DateLogic
-
-    SaveDialog --> FileHandler
-    FileHandler --> AndroidStorage
-    FileHandler --> AndroidIntents
-
-    %% Assigning Styles
-    class MainScreen,DateCalcUI,WebViewContainer,SaveDialog uiLayer;
-    class CurlEngine,DateLogic,FileHandler logicLayer;
-    class Internet,AndroidStorage,AndroidIntents externalLayer;
-```
 
 ## Paper
 (will be added once finished with personally identifying information redacted)
