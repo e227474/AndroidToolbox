@@ -30,7 +30,7 @@ Providing functionality missing in the [more secure](https://grapheneos.org/feat
 - [sensors permission](https://grapheneos.org/features#sensors-permission-toggle) (only on [GrapheneOS](https://grapheneos.org), can't be removed as a developer) 
 
 ## Architecture
-<img src="https://raw.githubusercontent.com/e227474/AndroidToolbox/refs/heads/master/architecture-graph.png">
+<img src="https://raw.githubusercontent.com/e227474/AndroidToolbox/refs/heads/master/architecture-graph_with-bg.png">
 
 
 
