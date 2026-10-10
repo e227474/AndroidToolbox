@@ -35,4 +35,4 @@ Providing functionality missing in the [more secure](https://grapheneos.org/feat
 
 
 ## Paper
-(will be added once finished with personally identifying information redacted)
+[Download PDF](Maturarbeit-redacted.pdf)
